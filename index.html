@@ -1,107 +1,205 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Relatório de Tanque - Volume Real e Percentual</title>
-<style>
-body { font-family: Arial, sans-serif; background:#f0f0f0; padding:20px; }
-input, select, button { padding:6px; margin:5px 0; width:100%; box-sizing:border-box; }
-button { background:#007bff; color:white; border:none; cursor:pointer; }
-.resultado, .tabela, .conteudo-pdf { background:white; padding:15px; margin-top:15px; }
-h2,h3 { margin-bottom:8px; }
-table { border-collapse: collapse; width:100%; font-size:12px; }
-table, th, td { border:1px solid #444; }
-th { background:#007bff; color:white; padding:6px; text-align:center; }
-td { padding:4px; text-align:center; }
-.highlight { background-color:#d1ffd1; }
-.pdf-header { text-align:center; margin-bottom:15px; }
-.tanque-diagrama { position: relative; border:2px solid #444; width:300px; height:150px; margin:10px 0; background:#eee; }
-.nivel-inicial { position:absolute; bottom:0; width:100%; background:rgba(0,123,255,0.5); }
-.nivel-final { position:absolute; bottom:0; width:100%; background:rgba(40,167,69,0.5); }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Tanque Pro</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #10b981;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 20px; }
+        h2, h3 { color: var(--text); margin: 10px 0; }
+
+        /* Layout em Cards */
+        .card { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .input-group { display: flex; flex-direction: column; }
+        label { font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #64748b; }
+        
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus { border-color: var(--primary); }
+
+        .actions { display: flex; gap: 10px; margin-top: 20px; }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .btn-calc { background: var(--primary); color: white; }
+        .btn-pdf { background: #64748b; color: white; }
+        button:active { transform: scale(0.98); }
+
+        /* Resultado */
+        .res-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .res-item { background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .res-item b { display: block; font-size: 1.1rem; color: var(--primary); }
+
+        /* Diagrama */
+        .tanque-wrapper { display: flex; justify-content: center; margin: 20px 0; }
+        .tanque-diagrama { 
+            position: relative; 
+            border: 3px solid #334155; 
+            width: 280px; height: 140px; 
+            background: #f1f5f9; 
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .nivel { position: absolute; bottom: 0; width: 100%; transition: height 0.5s ease-out; }
+        .nivel-inicial { background: rgba(37, 99, 235, 0.4); z-index: 1; }
+        .nivel-final { background: rgba(16, 185, 129, 0.6); z-index: 2; }
+
+        /* Tabela */
+        .tabela-container { overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; font-size: 0.75rem; margin-top: 10px; }
+        th { background: var(--primary); color: white; padding: 8px; }
+        td { border: 1px solid var(--border); padding: 5px; text-align: center; }
+        .highlight { background-color: #dcfce7 !important; font-weight: bold; }
+
+        /* Estilos para Impressão PDF */
+        @media print {
+            body { background: white; padding: 0; }
+            .btn-calc, .btn-pdf, label, select, input { display: none; }
+            .card { box-shadow: none; border: 1px solid #ccc; margin: 0; padding: 10px; }
+            .container { width: 100%; }
+            table { font-size: 10px; }
+            .no-print { display: none; }
+        }
+    </style>
 </head>
 <body>
 
-<h2>Calculadora de Volume do Tanque - Real e Percentual</h2>
+<div class="container">
+    <header>
+        <h2>Calculadora de Tanque</h2>
+    </header>
 
-<div class="conteudo-pdf">
-<div class="pdf-header"><h2>Relatório de Volume do Tanque</h2></div>
+    <div class="card no-print">
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label>Tipo de Tanque</label>
+                <select id="tipoTanque">
+                    <option value="cilindrico" selected>Cilíndrico Horizontal</option>
+                    <option value="retangular">Retangular</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Altura Tanque (cm)</label>
+                <input type="number" id="altura" placeholder="Ex: 200">
+            </div>
+            <div class="input-group">
+                <label>Largura (cm) *Retangular</label>
+                <input type="number" id="largura" placeholder="Ex: 150">
+            </div>
+            <div class="input-group">
+                <label>Comprimento (cm)</label>
+                <input type="number" id="comprimento" placeholder="Ex: 500">
+            </div>
+        </div>
 
-<label>Tipo de tanque</label>
-<select id="tipoTanque">
-    <option value="cilindrico" selected>Cilíndrico Horizontal</option>
-    <option value="retangular">Retangular</option>
-</select>
+        <h3 style="font-size: 1rem; margin-top: 20px; border-top: 1px solid #eee; pt: 10px;">Estoque e Temperatura</h3>
+        <div class="grid-inputs">
+            <div class="input-group"><label>Estoque Inicial (cm)</label><input type="number" id="estoqueInicial"></div>
+            <div class="input-group"><label>Estoque Final (cm)</label><input type="number" id="estoqueFinal"></div>
+            <div class="input-group"><label>Temp. Inicial (°C)</label><input type="number" id="tempCarregado"></div>
+            <div class="input-group"><label>Temp. Final (°C)</label><input type="number" id="tempDescarregado"></div>
+        </div>
 
-<h3>Dimensões do tanque</h3>
-<label>Altura do tanque (cm)</label>
-<input type="number" id="altura" step="0.1">
+        <div class="actions">
+            <button class="btn-calc" onclick="calcular()">Calcular Volume</button>
+            <button class="btn-pdf" onclick="exportarPDF()">Exportar PDF</button>
+        </div>
+    </div>
 
-<label>Largura do tanque (cm) - para retangular</label>
-<input type="number" id="largura" step="0.1">
+    <div id="area-relatorio">
+        <div class="card">
+            <h3>Resumo do Volume</h3>
+            <div class="res-grid">
+                <div class="res-item">Inicial: <b id="volIni">0 L</b> <small id="percIni">0%</small></div>
+                <div class="res-item">Final: <b id="volFin">0 L</b> <small id="percFin">0%</small></div>
+                <div class="res-item">Variação: <b id="volVar">0 L</b></div>
+                <div class="res-item">Capacidade: <b id="capTotal">0 L</b></div>
+            </div>
 
-<label>Comprimento do tanque (cm)</label>
-<input type="number" id="comprimento" step="0.1">
+            <div class="tanque-wrapper">
+                <div class="tanque-diagrama" id="diagrama">
+                    <div class="nivel nivel-inicial" id="nivelIni" style="height:0%"></div>
+                    <div class="nivel nivel-final" id="nivelFin" style="height:0%"></div>
+                </div>
+            </div>
+        </div>
 
-<hr>
-<h3>Estoque</h3>
-<label>Altura do estoque inicial (cm)</label>
-<input type="number" id="estoqueInicial" step="0.1">
-
-<label>Altura do estoque final (cm)</label>
-<input type="number" id="estoqueFinal" step="0.1">
-
-<hr>
-<h3>Temperatura do combustível</h3>
-<label>Temperatura carregado (°C)</label>
-<input type="number" id="tempCarregado" step="0.1">
-
-<label>Temperatura descarregado (°C)</label>
-<input type="number" id="tempDescarregado" step="0.1">
-
-<button onclick="calcular()">Calcular Volume</button>
-<button onclick="exportarPDF()">Exportar PDF</button>
-
-<div class="resultado">
-<h3>Resultado:</h3>
-Volume inicial: <span id="volIni">0</span> L<br>
-Volume final: <span id="volFin">0</span> L<br>
-Variação de volume: <span id="volVar">0</span> L<br>
-Capacidade total do tanque: <span id="capTotal">0</span> L<br>
-Percentual inicial do tanque: <span id="percIni">0</span>%<br>
-Percentual final do tanque: <span id="percFin">0</span>%
-</div>
-
-<div class="tanque-diagrama" id="diagrama">
-    <div class="nivel-inicial" id="nivelIni" style="height:0%"></div>
-    <div class="nivel-final" id="nivelFin" style="height:0%"></div>
-</div>
-
-<div class="tabela" id="tabelaVolumes">
-<h3>Tabela Compacta Altura × Volume (L)</h3>
-<table id="tabela"></table>
-</div>
+        <div class="card" id="tabela-card">
+            <h3>Tabela Altura × Volume</h3>
+            <div class="tabela-container">
+                <table id="tabela"></table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 function calcular(){
     let tipo = document.getElementById("tipoTanque").value;
-    let alturaTanque = parseFloat(document.getElementById("altura").value);
-    let largura = parseFloat(document.getElementById("largura").value);
-    let comprimento = parseFloat(document.getElementById("comprimento").value);
-    let hIni = parseFloat(document.getElementById("estoqueInicial").value);
-    let hFin = parseFloat(document.getElementById("estoqueFinal").value);
-    let tempIni = parseFloat(document.getElementById("tempCarregado").value);
-    let tempFin = parseFloat(document.getElementById("tempDescarregado").value);
+    let alturaTanque = parseFloat(document.getElementById("altura").value) || 0;
+    let largura = parseFloat(document.getElementById("largura").value) || 0;
+    let comprimento = parseFloat(document.getElementById("comprimento").value) || 0;
+    let hIni = parseFloat(document.getElementById("estoqueInicial").value) || 0;
+    let hFin = parseFloat(document.getElementById("estoqueFinal").value) || 0;
+    let tempIni = parseFloat(document.getElementById("tempCarregado").value) || 0;
+    let tempFin = parseFloat(document.getElementById("tempDescarregado").value) || 0;
 
-    if(!hIni || !hFin){ alert("Preencha a altura do estoque inicial e final."); return; }
+    if(!alturaTanque || !comprimento){ alert("Preencha as dimensões do tanque."); return; }
 
     let coef = 0.00095;
     let fatorTemp = 1 + coef * (tempFin - tempIni);
 
     function volumeCilindro(h){
         let R = alturaTanque/2;
+        if(h <= 0) return 0;
+        if(h >= alturaTanque) return Math.PI * Math.pow(R,2) * comprimento;
         if(h <= R){
             return comprimento * ( Math.pow(R,2) * Math.acos((R-h)/R) - (R-h)*Math.sqrt(2*R*h - Math.pow(h,2)) );
         } else {
@@ -111,85 +209,57 @@ function calcular(){
         }
     }
 
-    // Calcula volume total do tanque
     let volTotal = tipo==="retangular" ? largura*comprimento*alturaTanque/1000 : Math.PI*(alturaTanque/2)**2*comprimento/1000;
-
-    // Volumes inicial e final com ajuste de temperatura
     let volIni = tipo==="retangular" ? largura*comprimento*hIni*fatorTemp/1000 : volumeCilindro(hIni)*fatorTemp/1000;
     let volFin = tipo==="retangular" ? largura*comprimento*hFin*fatorTemp/1000 : volumeCilindro(hFin)*fatorTemp/1000;
-    let variacao = volFin - volIni;
+    
+    document.getElementById("volIni").innerText = volIni.toFixed(1) + " L";
+    document.getElementById("volFin").innerText = volFin.toFixed(1) + " L";
+    document.getElementById("volVar").innerText = (volFin - volIni).toFixed(1) + " L";
+    document.getElementById("capTotal").innerText = volTotal.toFixed(0) + " L";
+    document.getElementById("percIni").innerText = ((volIni/volTotal)*100).toFixed(1) + "%";
+    document.getElementById("percFin").innerText = ((volFin/volTotal)*100).toFixed(1) + "%";
 
-    document.getElementById("volIni").innerText = volIni.toFixed(2);
-    document.getElementById("volFin").innerText = volFin.toFixed(2);
-    document.getElementById("volVar").innerText = variacao.toFixed(2);
-    document.getElementById("capTotal").innerText = volTotal.toFixed(0);
-    document.getElementById("percIni").innerText = ((volIni/volTotal)*100).toFixed(1);
-    document.getElementById("percFin").innerText = ((volFin/volTotal)*100).toFixed(1);
+    document.getElementById("nivelIni").style.height = (hIni/alturaTanque*100) + "%";
+    document.getElementById("nivelFin").style.height = (hFin/alturaTanque*100) + "%";
 
-    // Diagrama visual
-    let nivelIni = (hIni/alturaTanque)*100;
-    let nivelFin = (hFin/alturaTanque)*100;
-    document.getElementById("nivelIni").style.height = nivelIni + "%";
-    document.getElementById("nivelFin").style.height = nivelFin + "%";
-
-    // Tabela compacta em colunas
+    // Tabela otimizada
     if(tipo==="cilindrico"){
-        let colunas = 5;
+        let colunas = window.innerWidth < 600 ? 3 : 5;
         let rows = Math.ceil(alturaTanque/colunas);
-        let tabela = "<tr>";
-        for(let c=0;c<colunas;c++){ tabela += "<th>Altura (cm)</th><th>Volume (L)</th>"; }
-        tabela += "</tr>";
+        let html = "<tr>";
+        for(let c=0;c<colunas;c++) html += "<th>cm</th><th>Litros</th>";
+        html += "</tr>";
 
         for(let r=0;r<rows;r++){
-            let linha = "<tr>";
+            html += "<tr>";
             for(let c=0;c<colunas;c++){
-                let h = r + c*rows +1;
-                if(h>alturaTanque){ linha+="<td></td><td></td>"; }
+                let h = r + c*rows + 1;
+                if(h > alturaTanque) { html += "<td>-</td><td>-</td>"; }
                 else {
                     let v = volumeCilindro(h)/1000;
-                    let classe = (h>=hIni && h<=hFin) ? " class='highlight'" : "";
-                    linha += `<td${classe}>${h}</td><td${classe}>${v.toFixed(2)}</td>`;
+                    let highlight = (h >= Math.min(hIni, hFin) && h <= Math.max(hIni, hFin)) ? "class='highlight'" : "";
+                    html += `<td ${highlight}>${h}</td><td ${highlight}>${v.toFixed(1)}</td>`;
                 }
             }
-            linha += "</tr>";
-            tabela += linha;
+            html += "</tr>";
         }
-        document.getElementById("tabela").innerHTML = tabela;
-    } else { document.getElementById("tabela").innerHTML = "<tr><td colspan='10'>Tabela disponível apenas para tanque cilíndrico</td></tr>"; }
+        document.getElementById("tabela").innerHTML = html;
+    } else {
+        document.getElementById("tabela").innerHTML = "<tr><td>Tabela disponível para cilíndrico.</td></tr>";
+    }
 }
 
 function exportarPDF(){
-    let diagrama = document.getElementById("diagrama").outerHTML;
-    let conteudo = document.createElement('div');
-    conteudo.innerHTML = `
-        <div style="font-family: Arial; padding:10px;">
-        <h2 style="text-align:center;">Relatório de Volume do Tanque</h2>
-        <h3>Dados do Tanque</h3>
-        Tipo: ${document.getElementById("tipoTanque").value}<br>
-        Altura: ${document.getElementById("altura").value} cm<br>
-        Largura: ${document.getElementById("largura").value} cm<br>
-        Comprimento: ${document.getElementById("comprimento").value} cm<br>
-        <h3>Estoque</h3>
-        Inicial: ${document.getElementById("estoqueInicial").value} cm<br>
-        Final: ${document.getElementById("estoqueFinal").value} cm<br>
-        <h3>Temperatura</h3>
-        Carregado: ${document.getElementById("tempCarregado").value} °C<br>
-        Descarregado: ${document.getElementById("tempDescarregado").value} °C<br>
-        <h3>Resultados</h3>
-        Volume inicial: ${document.getElementById("volIni").innerText} L<br>
-        Volume final: ${document.getElementById("volFin").innerText} L<br>
-        Variação de volume: ${document.getElementById("volVar").innerText} L<br>
-        Capacidade total: ${document.getElementById("capTotal").innerText} L<br>
-        Percentual inicial: ${document.getElementById("percIni").innerText}%<br>
-        Percentual final: ${document.getElementById("percFin").innerText}%<br>
-        <h3>Diagrama do Tanque</h3>
-        ${diagrama}
-        <h3>Tabela Compacta Altura × Volume</h3>
-        ${document.getElementById("tabelaVolumes").innerHTML}
-        </div>
-    `;
-    let opt = { margin:0.5, filename:'relatorio_tanque_percentual.pdf', image:{type:'jpeg', quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'in', format:'a4', orientation:'landscape'} };
-    html2pdf().set(opt).from(conteudo).save();
+    const elemento = document.getElementById('area-relatorio');
+    const opt = {
+        margin: [0.5, 0.5],
+        filename: 'relatorio-tanque.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(elemento).save();
 }
 </script>
 </body>
