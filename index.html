@@ -12,78 +12,85 @@
             --card: #ffffff;
             --text: #1e293b;
             --border: #e2e8f0;
+            --info-bg: #eff6ff;
         }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        
         body { background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-
         .container { max-width: 1000px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 10px; }
+        h2, h3 { color: var(--text); margin: 5px 0; }
 
-        header { text-align: center; margin-bottom: 20px; }
-        h2, h3 { color: var(--text); margin: 10px 0; }
+        /* Painel Informativo NBR 15461 */
+        .info-norma {
+            background: var(--info-bg);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+        }
+        .info-norma h4 { margin: 0 0 8px 0; color: var(--primary); }
+        .tab-norma { width: 100%; border-collapse: collapse; background: white; }
+        .tab-norma th, .tab-norma td { border: 1px solid #d1d5db; padding: 4px; text-align: center; }
+        .tab-norma th { background: #dbeafe; }
 
         /* Layout em Cards */
         .card { 
             background: var(--card); 
-            padding: 20px; 
+            padding: 15px; 
             border-radius: 12px; 
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid var(--border);
         }
 
         .grid-inputs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
         }
 
         .input-group { display: flex; flex-direction: column; }
-        label { font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #64748b; }
+        label { font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; color: #64748b; }
         
         input, select {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             outline: none;
-            transition: border 0.2s;
         }
-        input:focus { border-color: var(--primary); }
 
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
+        .actions { display: flex; gap: 10px; margin-top: 15px; }
         button {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
         }
         .btn-calc { background: var(--primary); color: white; }
         .btn-pdf { background: #64748b; color: white; }
-        button:active { transform: scale(0.98); }
 
         /* Resultado */
         .res-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
         }
-        .res-item { background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
-        .res-item b { display: block; font-size: 1.1rem; color: var(--primary); }
+        .res-item { background: #f1f5f9; padding: 8px; border-radius: 8px; text-align: center; font-size: 0.85rem; }
+        .res-item b { display: block; font-size: 1rem; color: var(--primary); }
 
         /* Diagrama */
-        .tanque-wrapper { display: flex; justify-content: center; margin: 20px 0; }
+        .tanque-wrapper { display: flex; justify-content: center; margin: 10px 0; }
         .tanque-diagrama { 
             position: relative; 
-            border: 3px solid #334155; 
-            width: 280px; height: 140px; 
+            border: 2px solid #334155; 
+            width: 200px; height: 100px; 
             background: #f1f5f9; 
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
         }
         .nivel { position: absolute; bottom: 0; width: 100%; transition: height 0.5s ease-out; }
@@ -92,19 +99,19 @@
 
         /* Tabela */
         .tabela-container { overflow-x: auto; }
-        table { border-collapse: collapse; width: 100%; font-size: 0.75rem; margin-top: 10px; }
-        th { background: var(--primary); color: white; padding: 8px; }
-        td { border: 1px solid var(--border); padding: 5px; text-align: center; }
+        table { border-collapse: collapse; width: 100%; font-size: 0.7rem; }
+        th { background: var(--primary); color: white; padding: 5px; }
+        td { border: 1px solid var(--border); padding: 3px; text-align: center; }
         .highlight { background-color: #dcfce7 !important; font-weight: bold; }
 
-        /* Estilos para Impressão PDF */
+        /* Ajustes Estritos para PDF em 1 folha */
         @media print {
-            body { background: white; padding: 0; }
-            .btn-calc, .btn-pdf, label, select, input { display: none; }
-            .card { box-shadow: none; border: 1px solid #ccc; margin: 0; padding: 10px; }
-            .container { width: 100%; }
-            table { font-size: 10px; }
-            .no-print { display: none; }
+            .no-print, .info-norma { display: none !important; }
+            body { padding: 0; background: white; }
+            .card { box-shadow: none; border: 1px solid #eee; margin-bottom: 10px; padding: 10px; }
+            .tanque-diagrama { width: 150px; height: 75px; }
+            #tabela { font-size: 0.6rem; }
+            h3 { font-size: 1rem; }
         }
     </style>
 </head>
@@ -115,6 +122,25 @@
         <h2>Calculadora de Tanque</h2>
     </header>
 
+    <div class="info-norma no-print">
+        <h4>ℹ️ Referência Técnica: NBR 15461</h4>
+        <table class="tab-norma">
+            <thead>
+                <tr>
+                    <th>Capacidade (L)</th>
+                    <th>Espessura (mm)</th>
+                    <th>Espessura (cm)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Até 5.000</td><td>3,00</td><td>0,30</td></tr>
+                <tr><td>5.001 a 15.000</td><td>4,75</td><td>0,47</td></tr>
+                <tr><td>15.001 a 30.000</td><td>6,35</td><td>0,63</td></tr>
+                <tr><td>Acima de 30.000</td><td>7,90+</td><td>0,79+</td></tr>
+            </tbody>
+        </table>
+    </div>
+
     <div class="card no-print">
         <div class="grid-inputs">
             <div class="input-group">
@@ -124,54 +150,38 @@
                     <option value="retangular">Retangular</option>
                 </select>
             </div>
-            <div class="input-group">
-                <label>Altura Tanque (cm)</label>
-                <input type="number" id="altura" placeholder="Ex: 200">
-            </div>
-            <div class="input-group">
-                <label>Largura (cm) *Retangular</label>
-                <input type="number" id="largura" placeholder="Ex: 150">
-            </div>
-            <div class="input-group">
-                <label>Comprimento (cm)</label>
-                <input type="number" id="comprimento" placeholder="Ex: 500">
-            </div>
-        </div>
-
-        <h3 style="font-size: 1rem; margin-top: 20px; border-top: 1px solid #eee; pt: 10px;">Estoque e Temperatura</h3>
-        <div class="grid-inputs">
+            <div class="input-group"><label>Altura (cm)</label><input type="number" id="altura"></div>
+            <div class="input-group"><label>Largura (cm)</label><input type="number" id="largura"></div>
+            <div class="input-group"><label>Comprimento (cm)</label><input type="number" id="comprimento"></div>
             <div class="input-group"><label>Estoque Inicial (cm)</label><input type="number" id="estoqueInicial"></div>
             <div class="input-group"><label>Estoque Final (cm)</label><input type="number" id="estoqueFinal"></div>
             <div class="input-group"><label>Temp. Inicial (°C)</label><input type="number" id="tempCarregado"></div>
             <div class="input-group"><label>Temp. Final (°C)</label><input type="number" id="tempDescarregado"></div>
         </div>
-
         <div class="actions">
-            <button class="btn-calc" onclick="calcular()">Calcular Volume</button>
+            <button class="btn-calc" onclick="calcular()">Calcular</button>
             <button class="btn-pdf" onclick="exportarPDF()">Exportar PDF</button>
         </div>
     </div>
 
     <div id="area-relatorio">
         <div class="card">
-            <h3>Resumo do Volume</h3>
+            <h3>Relatório de Volume</h3>
             <div class="res-grid">
-                <div class="res-item">Inicial: <b id="volIni">0 L</b> <small id="percIni">0%</small></div>
-                <div class="res-item">Final: <b id="volFin">0 L</b> <small id="percFin">0%</small></div>
+                <div class="res-item">Inicial: <b id="volIni">0 L</b> <span id="percIni">0%</span></div>
+                <div class="res-item">Final: <b id="volFin">0 L</b> <span id="percFin">0%</span></div>
                 <div class="res-item">Variação: <b id="volVar">0 L</b></div>
                 <div class="res-item">Capacidade: <b id="capTotal">0 L</b></div>
             </div>
-
             <div class="tanque-wrapper">
-                <div class="tanque-diagrama" id="diagrama">
-                    <div class="nivel nivel-inicial" id="nivelIni" style="height:0%"></div>
-                    <div class="nivel nivel-final" id="nivelFin" style="height:0%"></div>
+                <div class="tanque-diagrama">
+                    <div class="nivel nivel-inicial" id="nivelIni"></div>
+                    <div class="nivel nivel-final" id="nivelFin"></div>
                 </div>
             </div>
         </div>
-
-        <div class="card" id="tabela-card">
-            <h3>Tabela Altura × Volume</h3>
+        <div class="card">
+            <h3 id="titulo-tabela">Tabela Altura × Volume</h3>
             <div class="tabela-container">
                 <table id="tabela"></table>
             </div>
@@ -191,7 +201,7 @@ function calcular(){
     let tempIni = parseFloat(document.getElementById("tempCarregado").value) || 0;
     let tempFin = parseFloat(document.getElementById("tempDescarregado").value) || 0;
 
-    if(!alturaTanque || !comprimento){ alert("Preencha as dimensões do tanque."); return; }
+    if(!alturaTanque || !comprimento) return;
 
     let coef = 0.00095;
     let fatorTemp = 1 + coef * (tempFin - tempIni);
@@ -219,44 +229,41 @@ function calcular(){
     document.getElementById("capTotal").innerText = volTotal.toFixed(0) + " L";
     document.getElementById("percIni").innerText = ((volIni/volTotal)*100).toFixed(1) + "%";
     document.getElementById("percFin").innerText = ((volFin/volTotal)*100).toFixed(1) + "%";
-
     document.getElementById("nivelIni").style.height = (hIni/alturaTanque*100) + "%";
     document.getElementById("nivelFin").style.height = (hFin/alturaTanque*100) + "%";
 
-    // Tabela otimizada
     if(tipo==="cilindrico"){
-        let colunas = window.innerWidth < 600 ? 3 : 5;
-        let rows = Math.ceil(alturaTanque/colunas);
+        let cols = 6; // Aumentado para 6 colunas para encurtar a altura da tabela
+        let rows = Math.ceil(alturaTanque/cols);
         let html = "<tr>";
-        for(let c=0;c<colunas;c++) html += "<th>cm</th><th>Litros</th>";
+        for(let c=0; c<cols; c++) html += "<th>cm</th><th>L</th>";
         html += "</tr>";
-
-        for(let r=0;r<rows;r++){
+        for(let r=0; r<rows; r++){
             html += "<tr>";
-            for(let c=0;c<colunas;c++){
+            for(let c=0; c<cols; c++){
                 let h = r + c*rows + 1;
-                if(h > alturaTanque) { html += "<td>-</td><td>-</td>"; }
+                if(h > alturaTanque) html += "<td>-</td><td>-</td>";
                 else {
                     let v = volumeCilindro(h)/1000;
-                    let highlight = (h >= Math.min(hIni, hFin) && h <= Math.max(hIni, hFin)) ? "class='highlight'" : "";
-                    html += `<td ${highlight}>${h}</td><td ${highlight}>${v.toFixed(1)}</td>`;
+                    let high = (h >= Math.min(hIni, hFin) && h <= Math.max(hIni, hFin)) ? "class='highlight'" : "";
+                    html += `<td ${high}>${h}</td><td ${high}>${v.toFixed(0)}</td>`;
                 }
             }
             html += "</tr>";
         }
         document.getElementById("tabela").innerHTML = html;
     } else {
-        document.getElementById("tabela").innerHTML = "<tr><td>Tabela disponível para cilíndrico.</td></tr>";
+        document.getElementById("tabela").innerHTML = "<tr><td>Tabela para tanques cilíndricos.</td></tr>";
     }
 }
 
 function exportarPDF(){
     const elemento = document.getElementById('area-relatorio');
     const opt = {
-        margin: [0.5, 0.5],
+        margin: 0.2,
         filename: 'relatorio-tanque.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2 },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(elemento).save();
